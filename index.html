@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#201416">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%9C%3C/text%3E%3C/svg%3E">
+<title>Козацька Україна наприкінці 50–80-х рр. XVII ст. — гра «Дати й події»</title>
+<!-- Шрифт підвантажується за наявності інтернету; без нього гра працює із системними шрифтами -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #201416;
+    --topbar: #3a2224;
+    --panel: #2e1c1e;
+    --card: #241718;
+    --drop: #2d1c1e;
+    --line: #7a3a36;
+    --chip: #4a2224;
+    --red: #eb261c;
+    --red-2: #f25642;
+    --text: #ffffff;
+    --text-2: #efe5e5;
+    --dim: #c3a9aa;
+    --wm: #311d1e;
+    --dot-r: #ed6c61;
+    --dot-y: #eec47f;
+    --dot-g: #5fc857;
+    --ok: #3fae4a;
+    --ok-2: #5fc857;
+    --ok-bg: #1d2a1b;
+    --bad: #eb261c;
+    --bad-bg: #331617;
+    --font: "Google Sans", "Google Sans Text", "Golos Text", "Segoe UI", Roboto, Arial, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  /* Фірмовий темний стиль — однакові значення для обох тем */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #201416; } }
+  :root[data-theme="dark"] { --bg: #201416; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 17px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+
+  /* водяний знак: крапкова сітка по краях */
+  .wm { position: fixed; bottom: 0; top: 35vh; width: max(0px, calc((100vw - 1440px) / 2 + 8px)); pointer-events: none; z-index: 0;
+        background-image: radial-gradient(circle, var(--wm) 8px, transparent 8.5px); background-size: 42px 42px;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%); mask-image: linear-gradient(to bottom, transparent, #000 40%); }
+  .wm.l { left: 0; background-position: 14px 0; } .wm.r { right: 0; background-position: -14px 0; }
+  .wrap { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 12px 16px 48px; }
+
+  /* верхня панель */
+  .topbar { display: flex; align-items: center; gap: 16px; background: var(--topbar); border-radius: 999px; padding: 12px 22px; position: relative; min-height: 52px; }
+  .dots { display: flex; gap: 8px; flex: none; }
+  .dots i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+  .logo { font-weight: 800; font-size: 30px; letter-spacing: -0.02em; line-height: 1; display: inline-flex; align-items: center; color: #fff; font-family: "Golos Text", var(--font); }
+  .logo svg { width: 0.62em; height: 0.62em; margin: 0 0.02em; transform: translateY(0.06em); }
+  .nick { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; font-size: 17px; color: var(--text-2); white-space: nowrap; }
+  .nick svg { width: 22px; height: 22px; flex: none; }
+
+  .banner { margin-top: 12px; border-radius: 18px; background: linear-gradient(180deg, var(--red), var(--red-2)); padding: 20px 24px; text-align: center; }
+  .banner h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); font-weight: 600; line-height: 1.2; }
+  .banner .theme { display: block; font-size: clamp(14px, 1.3vw, 17px); font-weight: 500; opacity: .92; margin-bottom: 4px; }
+
+  /* інструкція */
+  .task { margin: 22px 0; border-left: 4px solid var(--red); border-radius: 2px; padding: 2px 0 2px 18px; font-size: clamp(16px, 1.4vw, 20px); color: var(--text-2); max-width: 1200px; }
+  .task b { color: var(--text); }
+  .howto { margin: 22px 0; border-left: 4px solid var(--red); border-radius: 2px; padding: 2px 0 2px 18px; max-width: 1200px; }
+  .howto summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); user-select: none; }
+  .howto summary::-webkit-details-marker { display: none; }
+  .howto summary .tog { color: var(--dim); font-weight: 500; font-size: 15px; }
+  .howto[open] summary .tog::after { content: "згорнути"; }
+  .howto:not([open]) summary .tog::after { content: "розгорнути"; }
+  .howto p { margin: 8px 0 0; font-size: clamp(16px, 1.4vw, 19px); color: var(--text-2); max-width: 75ch; }
+  .ico { width: 34px; height: 34px; flex: none; border-radius: 10px; background: var(--red); display: grid; place-items: center; }
+  .ico svg { width: 22px; height: 22px; }
+
+  .panel { border: 2px solid var(--line); border-radius: 18px; background: var(--panel); padding: 16px; }
+
+  /* стартовий екран */
+  .intro { margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+  .intro .panel { padding: 22px 24px; }
+  .intro h2 { margin: 0 0 6px; font-size: clamp(22px, 2.4vw, 30px); font-weight: 700; line-height: 1.2; }
+  .intro .lead { margin: 0 0 18px; color: var(--text-2); font-size: clamp(16px, 1.4vw, 19px); max-width: 62ch; }
+  .intro .howto { margin: 0; }
+  .facts { display: flex; flex-direction: column; gap: 12px; }
+  .fact { border: 2px solid var(--line); border-radius: 14px; background: var(--card); padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+  .fact .big { font-weight: 800; font-size: 40px; line-height: 1; min-width: 56px; }
+  .fact p { margin: 0; color: var(--text-2); }
+  .fact.tag .big { font-size: 28px; }
+  .intro .actions { margin-top: auto; padding-top: 4px; }
+  .facts .btn { width: 100%; }
+
+  /* ігрове поле */
+  .board { display: grid; grid-template-columns: minmax(250px, 320px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .side { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px - env(safe-area-inset-top, 0px)); overflow: auto; z-index: 5; }
+  .blk-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 12px; }
+  .blk-h h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .blk-h .cnt { color: var(--dim); font-size: 15px; white-space: nowrap; }
+  .bank { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-height: 64px; align-content: start; border-radius: 12px; }
+  .bank.over { outline: 2px dashed var(--red); outline-offset: 4px; }
+  .bank-empty { color: var(--dim); align-self: center; padding: 6px 4px; grid-column: 1 / -1; font-size: 15px; }
+
+  .chip { font: inherit; color: var(--text); background: var(--chip); border: 2px solid var(--red); border-radius: 12px; padding: 10px 12px;
+          cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; text-align: center; line-height: 1.2; display: block; width: 100%;
+          font-weight: 700; font-size: 19px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .chip:focus-visible, .ev:focus-visible, .btn:focus-visible, .howto summary:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+  .chip.sel { background: var(--red); box-shadow: 0 0 0 3px rgba(235, 38, 28, .35); }
+  .chip.src { opacity: .35; }
+  .chip.ghost { position: fixed; z-index: 50; pointer-events: none; cursor: grabbing; box-shadow: 0 10px 28px rgba(0,0,0,.45); margin: 0; }
+  .chip.ok { background: linear-gradient(180deg, var(--ok), var(--ok-2)); border-color: var(--ok-2); cursor: default; }
+  .chip.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--text-2); cursor: default; }
+  .chip .mark { margin-left: 8px; }
+
+  .events { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+  .ev { border: 2px solid var(--line); border-radius: 18px; background: var(--card); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
+  .ev-head { display: flex; align-items: flex-start; gap: 12px; flex: 1; }
+  .badge { width: 38px; height: 38px; flex: none; border-radius: 10px; background: var(--red); display: grid; place-items: center; font-weight: 700; font-size: 18px; }
+  .ev-text { font-weight: 600; font-size: 17px; line-height: 1.3; align-self: center; }
+  .zone { min-height: 52px; border: 2px dashed var(--red); border-radius: 14px; background: var(--drop); padding: 4px; display: flex; align-items: stretch; }
+  .zone.filled { border-color: transparent; padding: 0; background: transparent; }
+  .ev.over .zone { background: var(--chip); border-style: solid; }
+  .ev.over { border-color: var(--red); }
+  .ev.need .zone { animation: need .9s ease 2; }
+  @keyframes need { 50% { background: var(--chip); border-color: var(--red-2); } }
+  .zone .ph { width: 100%; align-self: center; text-align: center; color: var(--dim); font-size: 15px; }
+  .ev.ok { border-color: var(--ok-2); background: var(--ok-bg); cursor: default; }
+  .ev.ok .badge { background: var(--ok); }
+  .ev.bad { border-color: var(--bad); background: var(--bad-bg); cursor: default; }
+  .ev .fix { border-top: 1.5px solid var(--line); padding-top: 10px; font-size: 15px; color: var(--text-2); line-height: 1.35; }
+  .ev .fix b { color: var(--ok-2); }
+
+  /* кнопки */
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 22px; }
+  .btn { font: inherit; font-weight: 700; font-size: 18px; color: #fff; border: 0; border-radius: 14px; padding: 14px 26px; cursor: pointer; background: linear-gradient(180deg, var(--red), var(--red-2)); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.alt { background: var(--chip); border: 2px solid var(--red); padding: 12px 24px; }
+  .status { color: var(--dim); font-size: 16px; }
+  .status.warn { color: var(--text); background: var(--bad-bg); border: 2px solid var(--bad); border-radius: 12px; padding: 8px 14px; }
+
+  /* результат після перевірки */
+  .result { margin-top: 22px; }
+  .score { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .score .num { font-weight: 800; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .score .num span { color: var(--dim); font-weight: 600; font-size: 28px; }
+  .score p { margin: 0; color: var(--text-2); max-width: 60ch; }
+  .score .pct { font-weight: 800; font-size: 28px; color: var(--text); }
+
+  /* фінальний екран */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+  .stat .v small { font-size: .55em; font-weight: 600; color: var(--dim); }
+  .stat.pts { border-color: var(--dot-y); } .stat.pts .v { color: var(--dot-y); }
+  @media (max-width: 1024px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stat { border: 2px solid var(--line); border-radius: 18px; background: var(--card); padding: 18px 20px; }
+  .stat .v { display: block; font-weight: 800; font-size: clamp(34px, 4vw, 48px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { display: block; color: var(--dim); margin-top: 6px; font-size: 16px; }
+  .stat.good { border-color: var(--ok-2); } .stat.good .v { color: var(--ok-2); }
+  .stat.err { border-color: var(--bad); } .stat.err .v { color: var(--red-2); }
+  .stat.pc { background: linear-gradient(180deg, var(--red), var(--red-2)); border-color: transparent; }
+  .stat.pc .l { color: var(--text-2); }
+  .motto { margin: 22px 0 0; }
+  .review { margin-top: 22px; }
+  .review h2 { font-size: 20px; margin: 0 0 6px; }
+  .review .sub { color: var(--dim); margin: 0 0 14px; font-size: 15px; }
+  .pairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 10px; }
+  .pair { display: flex; align-items: center; gap: 14px; border: 2px solid var(--line); border-radius: 14px; background: var(--card); padding: 10px 14px; }
+  .pair .d { flex: none; min-width: 110px; text-align: center; font-weight: 700; font-size: 18px; background: var(--chip); border: 2px solid var(--red); border-radius: 12px; padding: 6px 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pair .e { font-weight: 500; line-height: 1.3; }
+  .pair .was { display: block; font-size: 14px; color: var(--red-2); font-weight: 500; margin-top: 2px; }
+  .pair.miss { border-color: var(--bad); }
+
+  @media (max-width: 1024px) {
+    .intro { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px) {
+    .board { grid-template-columns: 1fr; gap: 12px; }
+    .side { top: env(safe-area-inset-top, 0px); max-height: 42vh; padding: 12px; border-radius: 0 0 18px 18px; margin: 0 -16px; border-left: 0; border-right: 0; border-top: 0; box-shadow: 0 8px 18px rgba(0,0,0,.35); }
+    .blk-h { margin-bottom: 8px; }
+    .blk-h h2 { font-size: 17px; }
+    .bank { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; }
+    .bank .chip { width: auto; font-size: 16px; padding: 7px 12px; }
+    .bank-empty { padding: 4px; }
+  }
+  @media (max-width: 680px) {
+    .nick { position: static; transform: none; margin-left: auto; font-size: 14px; }
+    .nick span { display: none; }
+    .logo { font-size: 26px; }
+    .actions .btn { flex: 1 1 auto; }
+    .stats { grid-template-columns: 1fr; }
+    .stat { display: flex; align-items: baseline; gap: 14px; padding: 14px 18px; }
+    .stat .l { margin-top: 0; }
+    .ev { padding: 12px 14px 14px; }
+    .pair { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+  @media (max-width: 420px) { .chip { font-size: 16px; } .dots i { width: 11px; height: 11px; } .banner { padding: 16px 18px; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wm l" aria-hidden="true"></div><div class="wm r" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="topbar">
+    <div class="dots" aria-hidden="true"><i style="background:var(--dot-r)"></i><i style="background:var(--dot-y)"></i><i style="background:var(--dot-g)"></i></div>
+    <div class="logo" aria-label="znohub.">zn<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#fff"/><path d="M7.6 5.6 L14.2 10 L7.6 14.4 Z" fill="#3a2224"/></svg>hub.</div>
+    <div class="nick"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="#eb261c" stroke-width="2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="#eb261c" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="#eb261c"/></svg><span>yanina_znohub_hist</span></div>
+  </header>
+
+  <div class="banner"><h1><span class="theme">Тема 9</span>Козацька Україна наприкінці 50–80-х рр. XVII ст.</h1></div>
+
+  <!-- ===== СТАРТОВИЙ ЕКРАН ===== -->
+  <section id="screenStart" aria-label="Стартовий екран">
+    <div class="intro">
+      <div class="panel">
+        <h2>Гра «Дати й події»</h2>
+        <p class="lead">Навчальна гра для підготовки до НМТ з історії України. Поєднай історичні дати з подіями теми «Козацька Україна наприкінці 50–80-х рр. XVII ст.» і перевір, наскільки впевнено ти орієнтуєшся в хронології.</p>
+        <div class="howto howto-static">
+          <div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px">
+            <span class="ico" aria-hidden="true"></span>Інструкція
+          </div>
+          <p class="instr"></p>
+        </div>
+      </div>
+      <div class="facts">
+        <div class="fact"><span class="big" id="pairCount">11</span><p>пар «дата — подія» потрібно поєднати</p></div>
+        <div class="fact tag"><span class="big">НМТ</span><p>Тема 9 · історія України</p></div>
+        <div class="actions"><button class="btn" id="startBtn" type="button">Розпочати гру</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ІГРОВИЙ ЕКРАН ===== -->
+  <section id="screenGame" aria-label="Ігрове поле" hidden>
+    <details class="howto" open>
+      <summary><span class="ico" aria-hidden="true"></span>Інструкція <span class="tog"></span></summary>
+      <p class="instr"></p>
+    </details>
+
+    <div class="board">
+      <aside class="panel side" aria-label="Історичні дати">
+        <div class="blk-h"><h2>Історичні дати</h2><span class="cnt" id="leftCnt"></span></div>
+        <div class="bank" id="bank" data-zone="bank"></div>
+      </aside>
+
+      <section aria-label="Історичні події">
+        <div class="blk-h"><h2>Історичні події</h2><span class="cnt" id="doneCnt"></span></div>
+        <div class="events" id="events"></div>
+      </section>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="checkBtn" type="button">Перевірити відповіді</button>
+      <button class="btn alt" id="resetBtn" type="button">Почати знову</button>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
+    </div>
+
+    <section class="panel result" id="result" aria-live="polite" hidden>
+      <div class="score">
+        <div class="num" id="num"></div>
+        <div class="pct" id="pct"></div>
+        <p id="comment"></p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="toFinalBtn" type="button">Переглянути підсумки</button>
+        <button class="btn alt" id="againBtn1" type="button">Пройти ще раз</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ===== ФІНАЛЬНИЙ ЕКРАН ===== -->
+  <section id="screenFinal" aria-label="Підсумки гри" hidden>
+    <div class="stats">
+      <div class="stat good"><span class="v" id="fOk"></span><span class="l">правильних відповідей</span></div>
+      <div class="stat err"><span class="v" id="fErr"></span><span class="l">помилок</span></div>
+      <div class="stat pts"><span class="v" id="fPts"></span><span class="l">зароблено балів</span></div>
+      <div class="stat pc"><span class="v" id="fPct"></span><span class="l">загальний результат</span></div>
+    </div>
+    <p class="task motto" id="fMotto"></p>
+
+    <div class="actions">
+      <button class="btn" id="againBtn2" type="button">Пройти ще раз</button>
+      <button class="btn alt" id="backBtn" type="button">Повернутися до моїх відповідей</button>
+    </div>
+
+    <section class="panel review">
+      <h2>Усі правильні відповідності</h2>
+      <p class="sub">Повтори всі дати та події теми. Позначкою ✗ відмічено пари, у яких ти помилився.</p>
+      <ul class="pairs" id="pairs"></ul>
+    </section>
+  </section>
+</div>
+
+<script>
+/* =========================================================
+   ДАНІ ГРИ — змінюйте або доповнюйте цей масив.
+   Кожен елемент: { date: "дата", event: "історична подія" }
+   ========================================================= */
+const GAME_DATA = [
+  { date: "1657",      event: "Корсунська рада" },
+  { date: "1658",      event: "Гадяцький договір" },
+  { date: "1659",      event: "Конотопська битва" },
+  { date: "1659",      event: "Чуднівська кампанія (граф В. Шереметьєв)" },
+  { date: "1660",      event: "Слободищенська угода" },
+  { date: "1663",      event: "Фактичний поділ України на Правобережну (П. Тетеря); та Лівобережну (І. Брюховецький)" },
+  { date: "1665",      event: "Поїздка І. Брюховецького до Москви; Московські статті" },
+  { date: "1663–1664", event: "Похід П. Тетері з поляками на Лівобережжя" },
+  { date: "1665–1676", event: "П. Дорошенко – гетьман Правобережжя; створення «сердюків»" },
+  { date: "1667",      event: "Андрусівський перемир’я." },
+  { date: "1668",      event: "П. Дорошенко – гетьман обох боків Дніпра" }
+];
+
+/* Бали: скільки балів дає кожна правильна пара (як у НМТ — 1 бал за відповідність) */
+const POINTS_PER_PAIR = 1;
+const MAX_POINTS = () => TOTAL * POINTS_PER_PAIR;
+
+const INSTRUCTION = "Твоє завдання — встановити відповідність між історичними датами та подіями. Перетягуй кожну дату до відповідної історичної події. Кожну дату можна використати лише один раз. Коли завершиш усі відповідності, натисни кнопку «Перевірити відповіді», щоб побачити свій результат. Успіхів!";
+const LETTERS = "АБВГДЕЄЖЗИІКЛМНОПРСТУФХЦЧШЩЮЯ";
+const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8a2 2 0 0 1-2-2V4z"/><path d="M6 4a2 2 0 0 0-2 2v2h2"/><path d="M9.5 9h6M9.5 12.5h6M9.5 16h3.5"/></svg>';
+
+const $ = id => document.getElementById(id);
+const TOTAL = GAME_DATA.length;
+
+/* стан гри */
+let dates = [];       // [{ id, date }] — картки дат
+let dateOrder = [];   // порядок карток у блоці «Історичні дати»
+let eventOrder = [];  // порядок подій (індекси GAME_DATA)
+let place = {};       // id дати → індекс події або null
+let selected = null;  // обрана дата (режим натискання)
+let checked = false;  // відповіді перевірено й заблоковано
+let results = null;   // { score, perEvent: {idx: true/false} }
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* Перемішування без збігів «дата навпроти своєї події» на однакових позиціях */
+function makeOrders() {
+  const ids = dates.map(d => d.id);
+  const idx = GAME_DATA.map((_, i) => i);
+  for (let tries = 0; tries < 2000; tries++) {
+    const dO = shuffle(ids), eO = shuffle(idx);
+    const clash = dO.some((id, k) => byId(id).date === GAME_DATA[eO[k]].date);
+    const sameAsSource = eO.every((v, k) => v === k);
+    if (!clash && !sameAsSource) return [dO, eO];
+  }
+  return [shuffle(ids), shuffle(idx)];
+}
+const byId = id => dates.find(d => d.id === id);
+const occupant = evIdx => Object.keys(place).find(id => place[id] === evIdx) || null;
+const placedCount = () => Object.values(place).filter(v => v !== null).length;
+
+function show(screen) {
+  ["screenStart", "screenGame", "screenFinal"].forEach(s => { $(s).hidden = s !== screen; });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function newGame() {
+  dates = GAME_DATA.map((x, i) => ({ id: "d" + i, date: x.date }));
+  [dateOrder, eventOrder] = makeOrders();
+  place = {}; dates.forEach(d => place[d.id] = null);
+  selected = null; checked = false; results = null;
+  $("result").hidden = true;
+  setStatus("");
+  $("checkBtn").disabled = false;
+  render();
+  show("screenGame");
+}
+
+function setStatus(text, warn) {
+  const s = $("status"); s.textContent = text; s.classList.toggle("warn", !!warn && !!text);
+}
+
+/* ---------- відмальовування ---------- */
+function makeChip(id) {
+  const d = byId(id);
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.dataset.id = id; b.textContent = d.date;
+  if (selected === id) b.classList.add("sel");
+  if (checked) {
+    if (place[id] !== null) {
+      const ok = results.perEvent[place[id]];
+      b.classList.add(ok ? "ok" : "bad");
+      const m = document.createElement("span"); m.className = "mark"; m.textContent = ok ? "✓" : "✗"; b.appendChild(m);
+    }
+    b.tabIndex = -1;
+  } else {
+    b.setAttribute("aria-label", "Дата " + d.date + (place[id] !== null ? ", поставлено до події. Натисніть, щоб повернути" : ""));
+    b.addEventListener("pointerdown", onDown);
+    b.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tapChip(id); } });
+  }
+  return b;
+}
+
+function render() {
+  const bank = $("bank"); bank.innerHTML = "";
+  const free = dateOrder.filter(id => place[id] === null);
+  free.forEach(id => bank.appendChild(makeChip(id)));
+  if (!free.length) {
+    const s = document.createElement("span"); s.className = "bank-empty";
+    s.textContent = checked ? "Перевірку завершено." : "Усі дати розміщено — натисни «Перевірити відповіді».";
+    bank.appendChild(s);
+  }
+  $("leftCnt").textContent = "залишилось " + free.length;
+  $("doneCnt").textContent = "поєднано " + placedCount() + " з " + TOTAL;
+
+  const wrap = $("events"); wrap.innerHTML = "";
+  eventOrder.forEach((evIdx, k) => {
+    const ev = GAME_DATA[evIdx];
+    const occ = occupant(evIdx);
+    const card = document.createElement("div");
+    card.className = "ev"; card.dataset.zone = "e" + evIdx;
+
+    const head = document.createElement("div"); head.className = "ev-head";
+    const badge = document.createElement("div"); badge.className = "badge"; badge.textContent = LETTERS[k] || (k + 1);
+    const txt = document.createElement("div"); txt.className = "ev-text"; txt.textContent = ev.event;
+    head.append(badge, txt); card.appendChild(head);
+
+    const z = document.createElement("div"); z.className = "zone" + (occ ? " filled" : "");
+    if (occ) z.appendChild(makeChip(occ));
+    else { const ph = document.createElement("div"); ph.className = "ph"; ph.textContent = checked ? "Дату не обрано" : "Перетягни сюди дату"; z.appendChild(ph); }
+    card.appendChild(z);
+
+    if (checked) {
+      const ok = results.perEvent[evIdx];
+      card.classList.add(ok ? "ok" : "bad");
+      if (!ok) {
+        const fix = document.createElement("div"); fix.className = "fix";
+        fix.innerHTML = "Правильна відповідь: <b></b> — <span></span>";
+        fix.querySelector("b").textContent = ev.date;
+        fix.querySelector("span").textContent = ev.event;
+        card.appendChild(fix);
+      }
+      card.setAttribute("aria-label", ev.event + (ok ? ": правильно" : ": неправильно, правильна дата " + ev.date));
+    } else {
+      card.tabIndex = 0; card.setAttribute("role", "button");
+      card.setAttribute("aria-label", "Подія " + (LETTERS[k] || k + 1) + ": " + ev.event + (occ ? ", поставлено дату " + byId(occ).date : ", дату не поставлено"));
+      card.addEventListener("click", e => { if (e.target.closest(".chip")) return; tapZone("e" + evIdx); });
+      card.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === card) { e.preventDefault(); tapZone("e" + evIdx); } });
+    }
+    wrap.appendChild(card);
+  });
+}
+
+/* ---------- логіка переміщення ---------- */
+/* target: "bank" або "e<індекс події>" */
+function moveTo(id, target) {
+  if (checked) return;
+  if (target === "bank") place[id] = null;
+  else {
+    const evIdx = Number(target.slice(1));
+    const occ = occupant(evIdx);
+    if (occ && occ !== id) place[occ] = place[id]; // обмін місцями або повернення в банк
+    place[id] = evIdx;
+  }
+  selected = null; setStatus(""); render();
+}
+function tapZone(target) {
+  if (checked) return;
+  if (!selected) { if (target !== "bank") setStatus("Спочатку обери дату в блоці «Історичні дати», а потім натисни на подію."); return; }
+  moveTo(selected, target);
+}
+function tapChip(id) {
+  if (checked) return;
+  if (place[id] !== null) {
+    if (selected && selected !== id) moveTo(selected, "e" + place[id]);
+    else moveTo(id, "bank");
+    return;
+  }
+  selected = selected === id ? null : id;
+  setStatus(selected ? "Дату " + byId(id).date + " обрано. Тепер натисни на відповідну подію." : "");
+  render();
+  const el = document.querySelector('.bank .chip[data-id="' + id + '"]'); if (el) el.focus({ preventScroll: true });
+}
+
+/* ---------- перетягування мишею та дотиком (Pointer Events) ---------- */
+let drag = null;
+function onDown(e) {
+  if (checked || (e.button !== undefined && e.button > 0)) return;
+  const el = e.currentTarget;
+  drag = { id: el.dataset.id, el, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, moved: false, ghost: null, over: null, raf: 0 };
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  el.addEventListener("pointermove", onMove);
+  el.addEventListener("pointerup", onUp);
+  el.addEventListener("pointercancel", onCancel);
+}
+function zoneAt(x, y) { const t = document.elementFromPoint(x, y); return t ? t.closest("[data-zone]") : null; }
+function updateOver() {
+  const z = zoneAt(drag.cx, drag.cy);
+  if (drag.over && drag.over !== z) drag.over.classList.remove("over");
+  if (z) z.classList.add("over");
+  drag.over = z;
+}
+function autoScroll() {
+  if (!drag || !drag.moved) return;
+  const edge = 70, h = window.innerHeight; let v = 0;
+  if (drag.cy > h - edge) v = Math.min(18, (drag.cy - (h - edge)) / 3);
+  else if (drag.cy < edge) v = -Math.min(18, (edge - drag.cy) / 3);
+  if (v) { window.scrollBy(0, v); updateOver(); }
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+function onMove(e) {
+  if (!drag) return;
+  drag.cx = e.clientX; drag.cy = e.clientY;
+  if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+  if (!drag.moved) {
+    drag.moved = true;
+    const r = drag.el.getBoundingClientRect();
+    const g = drag.el.cloneNode(true); g.classList.add("ghost"); g.classList.remove("sel");
+    g.style.width = r.width + "px"; g.style.left = r.left + "px"; g.style.top = r.top + "px";
+    drag.dx = drag.x - r.left; drag.dy = drag.y - r.top;
+    document.body.appendChild(g); drag.ghost = g; drag.el.classList.add("src");
+    drag.raf = requestAnimationFrame(autoScroll);
+  }
+  drag.ghost.style.left = (e.clientX - drag.dx) + "px"; drag.ghost.style.top = (e.clientY - drag.dy) + "px";
+  updateOver();
+}
+function cleanup() {
+  if (!drag) return;
+  const el = drag.el;
+  el.removeEventListener("pointermove", onMove); el.removeEventListener("pointerup", onUp); el.removeEventListener("pointercancel", onCancel);
+  cancelAnimationFrame(drag.raf);
+  if (drag.ghost) drag.ghost.remove();
+  if (drag.over) drag.over.classList.remove("over");
+  el.classList.remove("src");
+}
+function onUp(e) {
+  if (!drag) return;
+  const d = drag; cleanup(); drag = null;
+  if (d.moved) { const z = zoneAt(e.clientX, e.clientY); if (z) moveTo(d.id, z.dataset.zone); }
+  else tapChip(d.id);
+}
+function onCancel() { cleanup(); drag = null; }
+
+/* ---------- перевірка ---------- */
+function check() {
+  if (checked) return; // захист від повторного зарахування
+  const left = TOTAL - placedCount();
+  if (left > 0) {
+    setStatus("Ще не всі пари поєднано: залишилось " + left + " з " + TOTAL + ". Розмісти всі дати, а потім перевір відповіді.", true);
+    document.querySelectorAll(".ev").forEach(c => { if (!c.querySelector(".zone.filled")) c.classList.add("need"); });
+    const first = document.querySelector(".ev.need"); if (first) first.scrollIntoView({ behavior: smooth(), block: "center" });
+    setTimeout(() => document.querySelectorAll(".ev.need").forEach(c => c.classList.remove("need")), 2000);
+    return;
+  }
+  const perEvent = {};
+  GAME_DATA.forEach((ev, i) => { const occ = occupant(i); perEvent[i] = !!occ && byId(occ).date === ev.date; });
+  const score = Object.values(perEvent).filter(Boolean).length;
+  results = { score, perEvent };
+  checked = true; selected = null;
+  $("checkBtn").disabled = true;
+  setStatus("");
+  render();
+
+  const pct = Math.round(score / TOTAL * 100);
+  $("num").innerHTML = score + " <span>/ " + TOTAL + "</span>";
+  $("pct").textContent = pct + "%";
+  $("comment").textContent = score === TOTAL
+    ? "Усі відповідності правильні. Зароблено балів: " + score * POINTS_PER_PAIR + " з " + MAX_POINTS() + ". Відповіді зафіксовано."
+    : "Правильних відповідностей: " + score + " з " + TOTAL + ". Зароблено балів: " + score * POINTS_PER_PAIR + " з " + MAX_POINTS() + ". Під кожною помилкою вказано правильну дату та подію. Відповіді зафіксовано.";
+  $("result").hidden = false;
+  $("result").scrollIntoView({ behavior: smooth(), block: "start" });
+}
+const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+function motto(pct) {
+  if (pct === 100) return "Бездоганно! Ти впевнено орієнтуєшся в хронології цієї теми — на НМТ такі завдання тобі не страшні.";
+  if (pct >= 80) return "Чудовий результат! Повтори кілька пар, у яких помилився, і хронологія теми буде в тебе як на долоні.";
+  if (pct >= 50) return "Непогано, база вже є. Переглянь список правильних відповідностей нижче й пройди гру ще раз.";
+  return "Ця тема потребує повторення. Уважно переглянь усі пари нижче, а потім спробуй ще раз — з кожною спробою буде краще.";
+}
+
+function showFinal() {
+  if (!checked) return;
+  const pct = Math.round(results.score / TOTAL * 100);
+  $("fOk").textContent = results.score;
+  $("fErr").textContent = TOTAL - results.score;
+  $("fPts").innerHTML = (results.score * POINTS_PER_PAIR) + " <small>/ " + MAX_POINTS() + "</small>";
+  $("fPct").textContent = pct + "%";
+  $("fMotto").textContent = motto(pct);
+  const ul = $("pairs"); ul.innerHTML = "";
+  GAME_DATA.forEach((ev, i) => {
+    const li = document.createElement("li"); li.className = "pair" + (results.perEvent[i] ? "" : " miss");
+    const d = document.createElement("span"); d.className = "d"; d.textContent = ev.date;
+    const e = document.createElement("span"); e.className = "e"; e.textContent = ev.event;
+    if (!results.perEvent[i]) {
+      const occ = occupant(i);
+      const w = document.createElement("span"); w.className = "was";
+      w.textContent = "✗ Твоя відповідь: " + (occ ? byId(occ).date : "—");
+      e.appendChild(w);
+    }
+    li.append(d, e); ul.appendChild(li);
+  });
+  show("screenFinal");
+}
+
+/* ---------- ініціалізація ---------- */
+document.querySelectorAll(".instr").forEach(p => p.textContent = INSTRUCTION);
+document.querySelectorAll(".ico").forEach(s => s.innerHTML = ICON);
+$("pairCount").textContent = TOTAL;
+$("startBtn").addEventListener("click", newGame);
+$("checkBtn").addEventListener("click", check);
+$("resetBtn").addEventListener("click", newGame);
+$("againBtn1").addEventListener("click", newGame);
+$("againBtn2").addEventListener("click", newGame);
+$("toFinalBtn").addEventListener("click", showFinal);
+$("backBtn").addEventListener("click", () => { show("screenGame"); $("result").scrollIntoView({ behavior: "auto", block: "start" }); });
+$("bank").addEventListener("click", e => { if (!e.target.closest(".chip") && selected) { selected = null; setStatus(""); render(); } });
+</script>
+</body>
+</html>
